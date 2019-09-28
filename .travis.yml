@@ -1,0 +1,31 @@
+sudo: required
+dist: trusty
+###############################################################################
+services:
+  - docker
+###############################################################################
+branches:
+  only:
+    - master
+###############################################################################
+before_install:
+- sudo docker pull hhgym/texlive
+- sudo docker run --name texlive --rm -i -t -d -v $PWD:/home -w /home hhgym/texlive bash
+- sudo docker exec texlive apt-get update
+- sudo docker exec texlive tlmgr update --self
+- sudo docker exec texlive tlmgr update --all
+###############################################################################
+script:
+- sudo docker exec texlive arara --verbose skript.tex
+###############################################################################
+deploy:
+  provider: releases
+  api_key:
+    secure: P+XsRlQm2lCSXP0+20+Z5h0PWRIxHJ95XcO7QIAz6hwKMllgTeFZ9gvt/WPEJ7S5wXBC/T6rUXCgTB2QdgeF3oBEoRa/qDQZ0cBbtgBFtNpiBmjfnM63bWxXfL9r4d6aAHTt6Dve9fTsxHVVM6/qVlsVEQrR9QiOizn6Sy0WNle1THWrGe3xv6jWhpmmvTIOa77pUAK09rrXskRqZEBOwteiYUgr7wBGm0jtGiTyVflSu8WBzNo3gdtrnMJ9ev2++dSH/HWrdPMufxHax33DsLNb8tC0SDNDkURt8hi3apnozc9I1Mv+7FnWzKcHlAji03H8TRayKK8/2soidWJ0gZSYWhabTTB8NaIrSwLeWzu3RZzCYR18GQPtGFBS/fpalu71GepmuYJrtPH7ZmXGKUK/iOCvSVdrKM+jappm0HfAjS02vRCHhOz6qQzR7EaIuy4wBh0M6x0Bk52LxEUjKMm2F5weUhugQFlHfwQSxCr0X5XT4R9+pnT6kgFyuzTeT2pyqYgs6ZmR86yscDHXpmQPcFX34EKb8RR8k9E83RjEg3nG4c0HGuElNvbtjhEU1F4OcD8grc73tvcKswnLd/02Ib0mpN9FEaEyA1bNZio2Ds2AJk+Lh7pK20ESU1GyNslZyr7CHinOU+tFmV6BLhBFphDYokR3/YTIKJdklh8=
+  file: skript.pdf
+  skip_cleanup: true
+  on:
+    repo: hhgym/mathe-sek1
+###############################################################################
+notifications:
+  email: false
